@@ -1,0 +1,91 @@
+{% extends "process/base_process.html" %}
+
+{% block head %}
+    
+    <title>Get Location-Xarsed</title>
+    
+    {{ form.media }}
+
+    <link href="https://cdn.jsdelivr.net/npm/ol@v10.5.0/ol.css" media="all" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/ol@v10.5.0/dist/ol.js"></script>
+    
+    <style>
+
+        body {
+            background: radial-gradient(hsl(286.29, 100%, 72.55%)/*Heliotrope*/, hsl(8.82, 58.62%, 34.12%)/*Burnt umber*/);  
+        }
+
+        #id_user_location_map {
+            height: 80vh; 
+            width: 80vw; 
+        }
+
+        .clear_features {
+            background-color: hsl(151.5, 46.51%, 83.14%); /*Aero blue*/
+            border: 0.05em solid hsl(46.15, 26.53%, 90.39%); /*Alabaster*/
+            border-radius: 0.5em;
+            box-shadow: 0em .2em .3em hsl(204, 18.8%, 26.08%); /*Charcoal*/
+            color: hsl(352.39, 67.62%, 20.59%); /*Chocolate Cosmos*/
+            font-family: Verdana, Arial, sans-serif;
+            font-size: 2em;
+            margin: 2em;
+            padding: 0.5em;
+            text-shadow: 0em .05em .15em hsl(40, 5.45%, 89.22%); /*Platinum*/
+            transition:  
+                box-shadow 0.1s,
+                color 0.2s,
+                font-weight 0.3s,
+                font-size 0.3s;
+        }
+
+        .clear_features:hover, .clear_features:focus {
+            box-shadow: 0em .1em .3em hsl(204, 18.8%, 26.08%); /*Charcoal*/
+            font-weight: bold;
+            font-size: 2.5em;
+        } 
+
+        .clear_features:active {
+            box-shadow: 0em .1em .3em hsl(204, 18.8%, 26.08%); /*Charcoal*/
+            font-weight: bold;
+            font-size: 2.5em;
+        }
+    
+    </style>
+
+{% endblock head %}
+
+{% block body %}
+
+    <div class="glass">
+
+        <h1>
+            Get your location for potential assessment
+        </h1>
+        <p>
+            For solar radiation calculations, you need to determine the desired location where you want to run your solar plant.
+        </p>
+        
+    </div>
+
+    <div class="glass">
+        
+        <form action="{% url 'process:get_location' %}" class="form" method="post">            
+            {% csrf_token %}
+            
+            {{ form.user_location.label_tag }}
+            <p>
+                {{ form.user_location.help_text }}
+            </p> 
+            <div class="message">
+                {{ form.non_field_errors.as_text }}
+                {{ form.user_location.errors.as_text }}
+            </div>
+            {{ form.user_location }}
+
+            <button type="submit" class="button" id="getLocation">Send</button>
+
+        </form>
+    
+    </div>
+
+{% endblock body %}

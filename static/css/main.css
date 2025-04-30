@@ -1,0 +1,355 @@
+
+/* Element */
+
+html, div, h1, h2, p, a, form, label, b, ul, li, sup, sub, table, tfoot, thead, th, td, tr {
+	border: 0;
+	font: inherit;    
+    line-height: 1.6;    
+	padding: 0;
+    text-align: center;
+	vertical-align: middle;
+}
+
+body {
+    background: hsl(0, 0%, 50%) cover;
+    display: grid;
+    font-size: 1vw;
+    margin: 0;
+}
+
+h1 {
+    color: hsl(6, 23.81%, 8.24%); /*Licorice*/
+    font-weight: bold;
+    font-size: 3.5em; 
+    font-family: Arial, Tahoma, sans-serif;
+    margin: 1.5em;
+    text-shadow: 0em .07em .15em hsl(48.33, 75%, 81.18%); /*Vanilla*/
+}
+
+h2 {
+    color: hsl(300, 4.35%, 13.53%); /*Raisin Black*/
+    font-weight: bold;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 3em;
+    margin: 1.2em;
+    text-shadow: 0em .05em .1em hsl(24.71, 100%, 96.67%); /*Seashell*/
+}
+
+p {
+    color: hsl(0, 0%, 10.59%); /*Eerie black*/
+    font-family: "Trebuchet MS", Tahoma, sans-serif;
+    font-size: 2.5em;
+    margin: 1em;
+}
+
+svg { 
+    height: 100%; 
+    left: 0;
+    position: absolute; 
+    top: 0; 
+    width: 100%;
+}
+
+a {
+    margin: 0;
+	text-decoration: none;
+}
+
+label {
+    color: hsl(10.17, 93.65%, 12.35%); /*Bean*/
+    font-weight: bold;
+    font-family: "Times New Roman", Georgia, serif; 
+    font-size: 2.5em;
+    margin: 1em;
+    text-shadow: 0em .03em .7em hsl(39.2, 100%, 85.29%); /*Peach*/
+}
+
+input {
+    display: none;
+}
+
+input {
+    display: inline-block;
+}
+
+input[type="text"], input[type="number"] {
+    height: 1.5em;
+    width: 10em;
+}
+
+input[type="file"] {
+    height: 1.5em;
+    width: 15em;
+}
+
+input[type="checkbox"] {
+    accent-color: hsl(39.2, 100%, 85.29%); /*Peach*/
+    height: 1em;
+    width: 1em;
+}
+
+input[type="checkbox"]:disabled {
+    accent-color: hsl(0, 0%, 41.18%); /*Dim gray*/
+}
+
+input[type="checkbox"]:checked {
+    accent-color: hsl(243.61, 86.93%, 30%); /*Ultramarine*/
+    height: 1.2em;
+    width: 1.2em;
+}
+
+b {
+    font-weight: bold;
+    margin: 0;
+}
+
+ul {
+	list-style: none;
+    margin: 0;
+}
+
+li {
+    color: hsl(195, 3.64%, 21.57%); /*Onyx*/
+    font-family: "Times New Roman", Georgia, serif;
+    font-size: 2.5em;
+    margin: 1em;
+}
+
+sup {
+    font-size: smaller;
+    margin: 0;
+    vertical-align: super;
+}
+
+sub {
+    font-size: smaller;
+    margin: 0;
+    vertical-align: sub;
+}
+
+table {
+    border-collapse: collapse;
+	border-spacing: 0;
+    color: hsl(0, 0%, 10.59%); /*Eerie black*/
+    font-family: arial, Verdana, sans-serif;
+    font-size: 2em;
+    margin: 0;
+    width: 80vw;
+}
+
+thead, tfoot {
+    font-weight: bold;
+    margin: 0;
+}
+
+th, td {    
+    border: 0.05em solid hsl(0, 0%, 41.18%); /*Dim gray*/
+    margin: 0;
+    padding: 0.7em;
+}
+
+tr:nth-child(odd) {
+    background-color: hsl(6, 100%, 94.12%); /*Misty Rose*/
+    margin: 0;
+}
+
+tr:nth-child(even) {
+    background-color: hsl(62.61, 50.36%, 73.14%); /*Green earth*/
+    margin: 0;
+}
+
+hr {
+    width: 100%;
+}
+
+
+/* Class */
+
+.glass {    
+    border: 0.2em solid hsla(46.15, 26.53%, 90.39%, 0.8); /*Alabaster*/
+    border-radius: 2em 2em 2em 2em; 
+    background-color: hsla(212.31, 14.61%, 34.9%, 0.2); /*Marengo*/
+    backdrop-filter: blur(20em);
+    box-shadow: 0em 2em 3em 2em hsla(190.91, 7.8%, 27.65%, 0.5); /*Outer Space*/
+    margin: 5em 7em;
+    padding: 2em;
+}
+
+.buttons {
+    display: flex;
+    font-size: 0.5vw; 
+    flex-flow: row wrap;
+    align-items: center;
+    justify-items: center; 
+    justify-content: center;
+}
+
+.button {
+    background-color: hsl(352.39, 67.62%, 20.59%); /*Chocolate Cosmos*/
+    border: 0.05em solid hsl(46.15, 26.53%, 90.39%); /*Alabaster*/
+    border-radius: 0.5em;
+    box-shadow: 0em .2em .3em hsl(204, 18.8%, 26.08%); /*Charcoal*/
+    color: hsl(151.5, 46.51%, 83.14%); /*Aero blue*/
+    font-family: Verdana, Arial, sans-serif;
+    font-size: 3.5em;
+    margin: 1em;
+    padding: 0.5em;
+    text-shadow: 0em .05em .15em hsl(40, 5.45%, 89.22%); /*Platinum*/
+    transition: 
+        background-color 0.2s,  
+        box-shadow 0.1s,
+        color 0.2s,
+        font-weight 0.3s,
+        font-size 0.3s;
+}
+
+.button:hover, .button:focus {
+    background-color: hsl(151.5, 46.51%, 83.14%); /*Aero blue*/
+    box-shadow: 0em .25em .4em hsl(204, 18.8%, 26.08%); /*Charcoal*/
+    color: hsl(352.39, 67.62%, 20.59%); /*Chocolate Cosmos*/
+    font-weight: bold;
+    font-size: 4em;
+} 
+
+.button:active {
+    background-color: hsl(243.61, 86.93%, 30%); /*Ultramarine*/
+    box-shadow: 0em .25em .4em hsl(204, 18.8%, 26.08%); /*Charcoal*/
+    font-weight: bold;
+    font-size: 4em;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-items: center; 
+    justify-content: center;
+}
+
+.input {
+    background-color: hsl(39.2, 100%, 85.29%); /*Peach*/
+    border-radius: 0.5em;
+    border-style: none;
+    box-shadow: 0em .2em .3em hsl(12.41, 12.34%, 53.92%); /*Cinereous*/
+    color: hsl(10.17, 93.65%, 12.35%); /*Bean*/
+    font-family: "Brush Script MT", Arial, sans-serif;
+    font-size: 2.5em;
+    margin: 1em;
+    padding: 0.25em;
+    transition: 
+        font-size 0.2s,
+        box-shadow 0.2s;
+}
+
+.input:hover, .input:focus {
+    box-shadow: 0em .25em .35em hsl(12.41, 12.34%, 53.92%); /*Cinereous*/
+    font-size: 3em;
+}
+
+.plotly .modebar-btn svg {
+    height: 2em!important;
+    width: 2em!important;
+}
+
+.message {
+    background-color: hsl(189.53, 72.79%, 71.18%); /*Sky blue (Crayola)*/
+    color: hsl(348.06, 78.15%, 53.33%); /*Amaranth*/ 
+    font-weight: bold;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 3em;
+    margin: 1.2em;
+    text-shadow: 0em .07em .15em hsl(60.47, 100%, 50%); /*Lemon (Crayola)*/
+}
+
+.boxes {
+    display: flex; 
+    flex-flow: row wrap; 
+    align-items: center;
+    justify-items: center; 
+    justify-content: center;
+}
+
+.box {
+    background-color: hsl(190.76, 100%, 28.43%); /*Duck Blue*/
+    border-radius: 0.5em;
+    border: 0.05em solid hsl(46.15, 26.53%, 90.39%); /*Alabaster*/
+    box-shadow: 0em .2em .3em hsl(204, 18.8%, 26.08%); /*Charcoal*/
+    color: hsl(151.5, 46.51%, 83.14%); /*Aero blue*/
+    font-family: Verdana, Arial, sans-serif;
+    font-size: 3.5em;
+    margin: 1em;
+    padding: 0.5em;
+    text-shadow: 0em .05em .15em hsl(40, 5.45%, 89.22%); /*Platinum*/
+    transition:
+        background-color 0.2s,  
+        box-shadow 0.1s,
+        color 0.2s, 
+        font-size 0.3s,
+        font-weight 0.3s;
+}
+
+.box:hover, .box:focus {	
+    background-color: hsl(151.5, 46.51%, 83.14%); /*Aero blue*/
+    box-shadow: 0em .25em .4em hsl(204, 18.8%, 26.08%); /*Charcoal*/
+    color: hsl(190.76, 100%, 28.43%); /*Duck Blue*/
+    font-weight: bold;
+    font-size: 4em;
+} 
+
+.checklist {
+    border: 0.03em solid hsl(46.15, 26.53%, 90.39%); /*Alabaster*/
+    border-radius: 0.5em;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-items: center; 
+    justify-content: center;
+    margin: 0.2em;
+}
+
+
+/* ID */
+
+#inside { 
+    height: 0;
+    margin: 1em;     
+    padding-top: 20%; 
+    position: relative;
+    width: 20%;
+    transition:
+        padding-top 0.2s,
+        width 0.2s;
+}
+
+#inside:hover, #inside:focus { 
+    padding-top: 30%;
+    width: 30%;
+}
+
+#inside:active {
+    padding-top: 35%;
+    width: 35%; 
+}
+
+#link:link {
+    background-color: transparent;
+    color: hsl(221.68, 85.59%, 21.76%); /*Sapphire*/
+    font-weight: bold;
+}
+
+#link:visited {
+    color: hsl(337.39, 85.89%, 47.25%); /*Ruby*/
+}
+
+#link:hover, #link:focus {
+    color: hsl(37.41, 100%, 50%); /*Orange peel*/
+    text-decoration: underline overline;
+}
+
+#link:active {
+    color: hsl(159.84, 100%, 74.9%); /*Aquamarine*/
+}
+
+#plot {
+    width: 80vw; 
+}

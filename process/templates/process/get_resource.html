@@ -1,0 +1,136 @@
+{% extends "process/base_process.html" %}
+
+{% block head %}
+    
+    <title>Get Resource Parameter-Xarsed</title>
+
+    {% load process_function %}
+    
+    <style>
+
+        body {
+            background: radial-gradient(hsl(80.24, 100%, 49.41%)/*Spring Bud*/, hsl(344.21, 100%, 37.25%)/*Apple red*/);  
+        }
+    
+    </style>    
+
+{% endblock head %}
+
+{% block body %}
+
+    <div class="glass">
+
+        <h1>
+            Get your data for resource parameters
+        </h1>
+        <p>
+            To perform solar calculations, there are four essential environmental parameters that need to be determined. 
+            You have two ways to do this: provide your own data or ask <b>Xarsed</b> to get the average data for your location. 
+            For the second method, simply check the box for <b>Getting data from the external repository</b> and submit the form, 
+            but for the first method, you need to pay attention to the following points:
+        </p>
+        <ul>
+            <li>
+                You need to provide a file containing a column with 8760 rows containing the value of hourly averages for a period of one year. (24 hours in 365 days).
+            </li>
+            <li>
+                No header is required and no non-numeric characters are acceptable.
+            </li>
+            <li>
+                For the temperature parameter, you need to provide the ambient temperature, preferably at a height of two meters, in Kelvin.
+            </li>
+            <li>
+                For the second and third parameters, which are related to solar flux, you need to provide the surface flux in watts per square meter.
+            </li>
+            <li>
+                For the albedo parameter, you need to provide the surface albedo with values ​​between 0 and 1 and without units.
+            </li>
+        </ul>
+        <p>
+            Given these points, negative values ​​are not acceptable for any of them and will automatically be converted to zero.
+        </p>
+        <p>
+            <b>
+                The final point is to do this for each parameter separately because only the form whose submit button you pressed will receive the data.
+            </b>
+        </p>
+            
+    </div>
+
+    {% for i in seriesParameters %}
+        
+        <div class="glass">
+
+            <form action="{% url 'process:resource_parameter' i %}" class="form" id="{{i}}" enctype="multipart/form-data" method="post">
+                {% csrf_token %}
+            
+                <h2>
+                    {{i|replace_underscore}}
+                </h2>
+
+                {% if i == selectedParameter %}
+                <div class="message">
+                    {{message1}}
+                </div>
+                {% else %}
+                <div></div>
+                {% endif %}
+                
+                <label for="uploadedFile">Upload your file:<br>(the uploaded file must be in CSV format and less than 2.5 MB in size)</label>
+                <input type="file" class="input" id="uploadedFile" name="uploadedFile" accept=".csv" />
+
+                {% if i == selectedParameter %}
+                <div class="message">
+                    {{message2}}
+                </div>
+                {% else %}
+                <div></div>
+                {% endif %}
+
+                <label for="repository">Getting data from the external repository:<br>(Depending on network speed and repository traffic, this method may take a while, so be patient!)</label>
+                <input type="checkbox" class="input" id="repository" name="repository" value="repository">
+
+                {% if i == selectedParameter %}
+                <div class="message">
+                    {{message3}}
+                </div>
+                {% else %}
+                <div></div>
+                {% endif %}
+
+                <button type="submit" class="button" id="uploadedFile">Send</button>
+
+                {% if i == selectedParameter %}
+                <div class="message">
+                    {{message4}}
+                </div>
+                {% else %}
+                <div></div>
+                {% endif %}
+
+            </form>
+
+        </div>
+
+    {% endfor %} 
+
+    <script>
+
+        let url = window.location.pathname;
+
+        let segments = url.split("/");
+
+        let lastSegment = segments[segments.length - 2];
+
+        if (lastSegment != "process"){
+            segments[segments.length-1] = "#" + lastSegment;
+            let newPath = segments.join("/");
+            window.location.href = newPath;
+        }
+        else {
+            // do nothing
+        }
+
+    </script>
+
+{% endblock body %}

@@ -1,0 +1,399 @@
+{% extends "process/base_process.html" %}
+
+{% block head %}
+    
+    <title>Generating Data-Xarsed</title>
+    
+    <style>
+
+        body {
+            background: radial-gradient(hsl(336.4, 100%, 82.55%)/*Carnation Pink*/, hsl(304.62, 52%, 29.41%)/*Palatinate*/);  
+        }
+    
+    </style>    
+
+{% endblock head %}
+
+{% block body %}
+
+    <div class="glass">
+
+        <h1>
+            Generate time series and consumption table for selected parameter
+        </h1>
+        <p>
+            You can create a time series of your electricity usage over a year by entering the usage of your electrical appliances into the form below. 
+            In general, you need two things: the wattage of your appliance, which is usually listed on the appliance itself as the rated power; 
+            and, the duration of use of the appliance and its repeating pattern over the hours, days, weeks, months, seasons, and year. 
+            Here are a few scenarios to make your job easier:
+        </p>
+        <ul>
+            <li>
+                Always on: Such as WiFi router and home security system; 
+                These devices are normally on all year round, to determine their consumption, 
+                simply enter their power, number and efficiency (if available) in the relevant boxes and do not tick any of the times and dates (this means that you have selected all of them). 
+                Finally, in the last box, i.e. usage time per minute, enter the value 60 (meaning 60 minutes) and submit the form.
+            </li>
+            <li>
+                Continuous operation with automatic shutdown: such as refrigerator and freezer; 
+                If you know exactly how long they will be off, enter the power, number and efficiency as before and from the date and time boxes, 
+                check only the relevant hours in the hours section and finally enter the usage time in minutes. If you do not know the hours of shutdown and operation, 
+                because these appliances are usually on for a third of the day, in the hours section, check the boxes one after the other with two empty ticks between them 
+                (for example, 0, 3, 6, etc.) and finally set the consumption to 60 minutes.
+            </li>
+            <li>
+                Daily usage: such as an electric stove and electric water heater; For this purpose, check the usual hours you use these devices in the hours section and enter the time in minutes for usage; 
+                for example, at 6 am, you take a shower for half an hour, so you only check 6 o'clock and enter 30 in the usage box; 
+                another example, you cook for 90 minutes from 6 to 7 pm, so you check 18 and 19 in the hours and divide the usage time between these two hours, that is, enter 45 minutes.
+            </li>
+            <li>
+                Weekly usage: such as washing machine and dryer; For example, you use your laundry on weekends at 5:00 PM and 6:00 PM for two hours. 
+                Simply check 6 and 7 in the days of a week section, 17 and 18 in the hours section, and enter 60 in the usage box.
+            </li>
+            <li>
+                Monthly usage; For example, you turn on a appliance only at the end of each month to perform a specific activity. 
+                For this purpose, just tick 4 in the weeks of a month section, and for subsequent sections like the previous example, in the days of a week section, 
+                tick 4 for the middle day of the last week of each month, and for the hours section, tick 12 for the middle of the day. For usage, enter 35 for 35 minutes of usage.
+            </li>
+            <li>
+                Seasonal usage: such as air conditioner and heater; The important thing about these types of appliances is that in your location, 
+                the device may be on for an entire season and a month of the next season, so if this is the case, check the months, not the seasons. 
+                In general, choose one between the season and the month to check, because there may be interference in determining the month of the season and neither will be included in the calculations.
+            </li>
+            <li>
+                Use on a specific day; If you use an appliance only on a specific day, enter the day of the year in the "Select the day of a year you want" box, specify the hours and minutes of use, and submit the form.
+            </li>
+        </ul>
+        <p>
+            With the help of the above scenarios, you can create your own suitable combination scenario. After you have entered all the devices, 
+            you can check the Total Average Monthly Consumption value at the bottom of the table and compare it with your monthly electricity bill to make sure you have not missed any appliance. 
+            After downloading your CSV file using the button embedded at the bottom of this page, press the <b>Return to Process section</b> button to return to the Parameters page and upload the same CSV file without any changes.
+        </p>
+        <p>
+            <b>
+                One final important point is that you can only clear the entire table, not just one item, so proceed with caution.
+            </b>
+        </p>
+            
+    </div>
+
+    <div class="glass">
+
+        <form action="{% url 'process:create_table' selectedParameter %}" class="form" method="post">
+            {% csrf_token %}
+
+            <h2>
+                Build your own appliance table!
+            </h2>
+                
+            <label for="appliance">Select the desire appliance from appliance list:</label>
+            <select class="button" id="appliance" name="appliance" style="font-size: 2.5em;">
+                {{applianceList|safe}}
+            </select>
+
+            <label for="applianceName">Insert your appliance name if you dont find them in appliance list:</label>
+            <input type="text" class="input" id="applianceName" name="applianceName" />
+
+            <label for="applianceConsumption">Determine the consumption of your device:(In [{{consumptionUnit}}]) *REQUIRED</label>
+            <input type="number" class="input" id="applianceConsumption" name="applianceConsumption" step="any" min="1" required />
+
+            <label for="applianceCount">Insert count of your appliance: (default = 1)</label>
+            <input type="number" class="input" id="applianceCount" name="applianceCount" step="1" min="1" placeholder="1" value="1" />
+
+            <label for="applianceEfficiency">Insert efficiency of your appliance: (default = 90%)</label>
+            <input type="number" class="input" id="applianceEfficiency" name="applianceEfficiency" step="any" min="1" max="100" placeholder="90" value="90" />
+
+            <label for="season">Select your desired seasons:</label>
+            <div class="boxes">
+                <div class="checklist">
+                    <label for="season">Winter</label>
+                    <input type="checkbox" class="input" id="season" name="season" value="1" />
+                </div>
+                <div class="checklist">
+                    <label for="season">Spring</label>
+                    <input type="checkbox" class="input" id="season" name="season" value="2" />
+                </div>
+                <div class="checklist">
+                    <label for="season">Summer</label>
+                    <input type="checkbox" class="input" id="season" name="season" value="3" />
+                </div>
+                <div class="checklist">
+                    <label for="season">Autumn</label>
+                    <input type="checkbox" class="input" id="season" name="season" value="4" />
+                </div>
+            </div>
+
+            <label for="month">Select your desired months:</label>
+            <div class="boxes">
+                <div class="checklist">
+                    <label for="month">1</label>
+                    <input type="checkbox" class="input" id="month" name="month" value="1" />
+                </div>
+                <div class="checklist">
+                    <label for="month">2</label>
+                    <input type="checkbox" class="input" id="month" name="month" value="2" />
+                </div>
+                <div class="checklist">
+                    <label for="month">3</label>
+                    <input type="checkbox" class="input" id="month" name="month" value="3" />
+                </div>
+                <div class="checklist">
+                    <label for="month">4</label>
+                    <input type="checkbox" class="input" id="month" name="month" value="4" />
+                </div>
+                <div class="checklist">
+                    <label for="month">5</label>
+                    <input type="checkbox" class="input" id="month" name="month" value="5" />
+                </div>
+                <div class="checklist">
+                    <label for="month">6</label>
+                    <input type="checkbox" class="input" id="month" name="month" value="6" />
+                </div>
+            </div>
+            <div class="boxes">
+                <div class="checklist">
+                    <label for="month">7</label>
+                    <input type="checkbox" class="input" id="month" name="month" value="7" />
+                </div>
+                <div class="checklist">
+                    <label for="month">8</label>
+                    <input type="checkbox" class="input" id="month" name="month" value="8" />
+                </div>
+                <div class="checklist">
+                    <label for="month">9</label>
+                    <input type="checkbox" class="input" id="month" name="month" value="9" />
+                </div>
+                <div class="checklist">
+                    <label for="month">10</label>
+                    <input type="checkbox" class="input" id="month" name="month" value="10" />
+                </div>
+                <div class="checklist">
+                    <label for="month">11</label>
+                    <input type="checkbox" class="input" id="month" name="month" value="11" />
+                </div>
+                <div class="checklist">
+                    <label for="month">12</label>
+                    <input type="checkbox" class="input" id="month" name="month" value="12" />
+                </div>
+            </div>
+
+            <label for="week">Select the weeks of a month you want:</label>
+            <div class="boxes">
+                <div class="checklist">
+                    <label for="week">1</label>
+                    <input type="checkbox" class="input" id="week" name="week" value="1" />
+                </div>
+                <div class="checklist">
+                    <label for="week">2</label>
+                    <input type="checkbox" class="input" id="week" name="week" value="2" />
+                </div>
+                <div class="checklist">
+                    <label for="week">3</label>
+                    <input type="checkbox" class="input" id="week" name="week" value="3" />
+                </div>
+                <div class="checklist">
+                    <label for="week">4</label>
+                    <input type="checkbox" class="input" id="week" name="week" value="4" />
+                </div>
+            </div>
+
+            <label for="day">Select the days of a week you want:</label>
+            <div class="boxes">
+                <div class="checklist">
+                    <label for="day">1</label>
+                    <input type="checkbox" class="input" id="day" name="day" value="1" />
+                </div>
+                <div class="checklist">
+                    <label for="day">2</label>
+                    <input type="checkbox" class="input" id="day" name="day" value="2" />
+                </div>
+                <div class="checklist">
+                    <label for="day">3</label>
+                    <input type="checkbox" class="input" id="day" name="day" value="3" />
+                </div>
+                <div class="checklist">
+                    <label for="day">4</label>
+                    <input type="checkbox" class="input" id="day" name="day" value="4" />
+                </div>
+                <div class="checklist">
+                    <label for="day">5</label>
+                    <input type="checkbox" class="input" id="day" name="day" value="5" />
+                </div>
+                <div class="checklist">
+                    <label for="day">6</label>
+                    <input type="checkbox" class="input" id="day" name="day" value="6" />
+                </div>
+                <div class="checklist">
+                    <label for="day">7</label>
+                    <input type="checkbox" class="input" id="day" name="day" value="7" />
+                </div>
+            </div>
+
+            <label for="specficDay">Select the day of a year you want:</label>
+            <input type="number" class="input" id="specficDay" name="specficDay" step="1" min="1" max="365" />
+
+            <label for="hour">Select the hours of a day you want:</label>
+            <div class="boxes">
+                <div class="checklist">
+                    <label for="hour">0</label>
+                    <input type="checkbox" class="input" id="hour" name="hour" value="0" />
+                </div>                
+                <div class="checklist">
+                    <label for="hour">1</label>
+                    <input type="checkbox" class="input" id="hour" name="hour" value="1" />
+                </div>                
+                <div class="checklist">
+                    <label for="hour">2</label>
+                    <input type="checkbox" class="input" id="hour" name="hour" value="2" />
+                </div>                
+                <div class="checklist">
+                    <label for="hour">3</label>
+                    <input type="checkbox" class="input" id="hour" name="hour" value="3" />
+                </div>                
+                <div class="checklist">
+                    <label for="hour">4</label>
+                    <input type="checkbox" class="input" id="hour" name="hour" value="4" />
+                </div>                
+                <div class="checklist">
+                    <label for="hour">5</label>
+                    <input type="checkbox" class="input" id="hour" name="hour" value="5" />
+                </div>                
+                <div class="checklist">
+                    <label for="hour">6</label>
+                    <input type="checkbox" class="input" id="hour" name="hour" value="6" />
+                </div>                
+                <div class="checklist">
+                    <label for="hour">7</label>
+                    <input type="checkbox" class="input" id="hour" name="hour" value="7" />
+                </div> 
+            </div>    
+            <div class="boxes">
+                <div class="checklist">
+                    <label for="hour">8</label>
+                    <input type="checkbox" class="input" id="hour" name="hour" value="8" />
+                </div>                
+                <div class="checklist">
+                    <label for="hour">9</label>
+                    <input type="checkbox" class="input" id="hour" name="hour" value="9" />
+                </div>                
+                <div class="checklist">
+                    <label for="hour">10</label>
+                    <input type="checkbox" class="input" id="hour" name="hour" value="10" />
+                </div>                
+                <div class="checklist">
+                    <label for="hour">11</label>
+                    <input type="checkbox" class="input" id="hour" name="hour" value="11" />
+                </div>                
+                <div class="checklist">
+                    <label for="hour">12</label>
+                    <input type="checkbox" class="input" id="hour" name="hour" value="12" />
+                </div>                
+                <div class="checklist">
+                    <label for="hour">13</label>
+                    <input type="checkbox" class="input" id="hour" name="hour" value="13" />
+                </div>                
+                <div class="checklist">
+                    <label for="hour">14</label>
+                    <input type="checkbox" class="input" id="hour" name="hour" value="14" />
+                </div>                               
+                <div class="checklist">
+                    <label for="hour">15</label>
+                    <input type="checkbox" class="input" id="hour" name="hour" value="15" />
+                </div> 
+            </div>    
+            <div class="boxes">               
+                <div class="checklist">
+                    <label for="hour">16</label>
+                    <input type="checkbox" class="input" id="hour" name="hour" value="16" />
+                </div>                
+                <div class="checklist">
+                    <label for="hour">17</label>
+                    <input type="checkbox" class="input" id="hour" name="hour" value="17" />
+                </div>                
+                <div class="checklist">
+                    <label for="hour">18</label>
+                    <input type="checkbox" class="input" id="hour" name="hour" value="18" />
+                </div>                
+                <div class="checklist">
+                    <label for="hour">19</label>
+                    <input type="checkbox" class="input" id="hour" name="hour" value="19" />
+                </div>                
+                <div class="checklist">
+                    <label for="hour">20</label>
+                    <input type="checkbox" class="input" id="hour" name="hour" value="20" />
+                </div>                
+                <div class="checklist">
+                    <label for="hour">21</label>
+                    <input type="checkbox" class="input" id="hour" name="hour" value="21" />
+                </div>                
+                <div class="checklist">
+                    <label for="hour">22</label>
+                    <input type="checkbox" class="input" id="hour" name="hour" value="22" />
+                </div>                
+                <div class="checklist">
+                    <label for="hour">23</label>
+                    <input type="checkbox" class="input" id="hour" name="hour" value="23" />
+                </div> 
+            </div>
+
+            <label for="applianceUsage">Enter the time in minutes to use the desired appliance: *REQUIRED</label>
+            <input type="number" class="input" id="applianceUsage" name="applianceUsage" step="1" min="1" max="60" required />
+
+            <button type="submit" class="button" id="applianceUsage">Send</button>
+
+        </form>
+
+    </div>
+
+    <div class="glass">
+
+        <h2>Appliances Consumption Table</h2>
+
+        <table>
+            {{consumptionTable|safe}}
+        </table>
+
+    </div>
+
+    <div class="glass">
+
+        <form action="{% url 'process:generate_csv' selectedParameter %}" class="form" method="post">
+            {% csrf_token %}
+
+            <p>
+                If there is no other appliance left to enter into the consumption table, press the button below to get the time series of the parameter you want:
+            </p>
+                
+            <button type="submit" class="button" id="generateCSV">Generate CSV</button>
+
+        </form>
+        <form action="{% url 'process:return_process' selectedParameter %}" class="form" method="post">
+            {% csrf_token %}
+
+            <p>
+                If you have received your CSV file and are ready to return to the process section, click the button below:
+            </p>
+                
+            <button type="submit" class="button" id="returnProcess" style="font-size: 2.5em;">Return to Process section</button>
+
+        </form>
+        <form action="{% url 'process:delete_table' selectedParameter %}" class="form" method="post">
+            {% csrf_token %}
+
+            <p>
+                If you want to <b>completely</b> delete the table and time series you have created so far, press the button below:
+            </p>
+                
+            <button type="submit" class="button" id="deleteTable" style="font-size: 2em;">Delete Table</button>
+
+            <div class="message">
+                {{message}}
+            </div>
+
+        </form>
+
+    </div>
+    
+{% endblock body %}
+        
+        
