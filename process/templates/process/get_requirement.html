@@ -1,0 +1,102 @@
+{% extends "process/base_process.html" %}
+
+{% block head %}
+    
+    <title>Get Requirement Parameter-Xarsed</title>
+
+    {% load process_function %}
+    
+    <style>
+
+        body {
+            background: radial-gradient(hsl(336, 35.29%, 66.67%)/*Rose Gold*/, hsl(160.91, 34.02%, 38.04%)/*Viridian*/);  
+        }
+    
+    </style>    
+
+{% endblock head %}
+
+{% block body %}
+
+    <div class="glass">
+
+        <h1>
+            Get your data for requirement parameter
+        </h1>
+        <p>
+            Here you just need to set the electricity parameter. Again, there are two ways to do this: 
+            Either enter your hourly consumption data or create this data using the <b>Generate Data</b> tool. 
+            Your file should contain 8760 positive or zero numbers, as in the previous section. 
+            The important thing here is that these values ​​should be the aggregate (not the average) of your electricity consumption per hour and in watts.
+        </p>
+            
+    </div>
+
+    {% for i in seriesParameters %}
+        
+        <div class="glass">
+
+            <form action="{% url 'process:requirement_parameter' i %}" class="form" id="{{i}}" enctype="multipart/form-data" method="post">
+                {% csrf_token %}
+                
+                <h2>
+                    {{i|replace_underscore}}
+                </h2>
+                
+                <label for="uploadedFile">Upload your file:<br>(the uploaded file must be in CSV format and less than 2.5 MB in size)</label>
+                <input type="file" class="input" id="uploadedFile" name="uploadedFile" accept=".csv" required />
+
+                {% if i == selectedParameter %}
+                <div class="message">
+                    {{message1}}
+                </div>
+                {% else %}
+                <div></div>
+                {% endif %}
+
+                <button type="submit" class="button" id="uploadedFile">Send</button>
+
+                {% if i == selectedParameter %}
+                <div class="message">
+                    {{message2}}
+                </div>
+                {% else %}
+                <div></div>
+                {% endif %}
+
+            </form>
+            <form action="{% url 'process:generate_data' i %}" class="form" method="post">
+                {% csrf_token %}
+
+                <p>
+                    If you don't have data for the {{i|replace_underscore}} parameter, you can use the <b>Generate Data</b> tool to generate a time series for the desired parameter:
+                </p>
+                
+                <button type="submit" class="button" id="generateData" style="font-size: 2em;">Generate Data</button>
+
+            </form>
+
+        </div>
+
+    {% endfor %} 
+
+    <script>
+
+        let url = window.location.pathname;
+
+        let segments = url.split("/");
+
+        let lastSegment = segments[segments.length - 2];
+
+        if (lastSegment != "process"){
+            segments[segments.length-1] = "#" + lastSegment;
+            let newPath = segments.join("/");
+            window.location.href = newPath;
+        }
+        else {
+            // do nothing
+        }
+
+    </script>
+
+{% endblock body %}

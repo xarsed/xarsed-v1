@@ -1,0 +1,85 @@
+{% extends "process/base_process.html" %}
+
+{% block head %}
+      
+    <title>Get Requirement Parameter-Xarsed</title>
+
+    <style>
+
+        body {
+            background: radial-gradient(hsl(178.39, 91.02%, 51.96%)/*Fluorescent blue*/, hsl(8.47, 100%, 50%)/*Scarlet*/);  
+        }
+
+    </style>    
+
+{% endblock head %}
+
+{% block body %}
+
+    {% for i in reportList %}
+        <div class="glass">
+
+            {{i|safe}}
+
+        </div>
+    {% endfor %}
+
+    <div class="glass">
+
+        <p>
+            <b>Xarsed</b> hopes that this report will be useful to you and that you can take a step closer to becoming independent with the help of nature. 
+            If you would like to accompany <b>Xarsed</b> on its path ahead, you can send any amount you like to the following Bitcoin address:
+        </p>
+        <p>
+            <b id="btcAddress">{{btcAddress}}</b>
+        </p>
+        <button class="button" onclick="copyAddress('btcAddress')">
+            Copy BTC Address
+        </button>
+
+    </div>
+
+    <div class="glass">
+
+        <form action="{% url 'process:save_html' %}" class="form" method="post">
+            {% csrf_token %}
+                
+            <p>
+                This report contains data, images, and interactive charts, each with a different style to highlight them. 
+                If you plan to save this report, <b>Xarsed</b> recommends that you use the button below. 
+                This button will prepare the report file as a single HTML file, with all its necessary materials, for your download. 
+            </p>
+            <p>
+                Finally, you have one hour to save your report. 
+                After this time, all your information will be deleted and you will need to log in again.
+            </p>
+            <p>
+                <b>Enjoy!</b>
+            </p>
+
+            <button type="submit" class="button" id="report">Save Report</button>
+        </form>
+
+    </div>
+    <div class="glass">
+    
+        <form action="{% url 'home:home' %}" class="form" method="get">  
+            <button type="submit" class="button" id="home">Home</button>
+        </form>
+
+    </div>
+    <script>
+
+        function copyAddress(address) {
+
+            let createInput = document.createElement("input");
+            createInput.setAttribute("value", document.getElementById(address).innerHTML);
+            navigator.clipboard.writeText(createInput.value);
+
+            alert("Address copied to clipboard");
+
+        }                      
+    
+    </script>
+
+{% endblock body %}
