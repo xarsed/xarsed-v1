@@ -1,5 +1,4 @@
 Django==5.1.7
-GDAL==3.10.2
 gunicorn==23.0.0
 pandas==2.2.3
 plotly==6.0.1
