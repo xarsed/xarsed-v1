@@ -30,7 +30,7 @@ SECRET_KEY_FALLBACKS = [os.environ.get('DJANGO_SECRET_KEY_FALLBACKS', '')]
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DJANGO_DEBUG', '') != 'False'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['xarsed.pythonanywhere.com', '127.0.0.1']
 
 
 # Application definition
@@ -138,4 +138,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Session and Cookie
 
 CSRF_COOKIE_SECURE = True
+CSRF_TRUSTED_ORIGINS = ['https://xarsed.pythonanywhere.com']
 SESSION_COOKIE_SECURE = True
+
