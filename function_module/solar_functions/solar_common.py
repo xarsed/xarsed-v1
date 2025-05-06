@@ -1,9 +1,8 @@
 
-def solar_position(latitude, longitude):
+def solar_position(latitude, longitude, time_difference):
     
-    import math, pytz
+    import math
     from datetime import datetime, timezone
-    from timezonefinder import TimezoneFinder
     
     base_date = datetime(2000, 1, 1, 12)
     current_time = datetime.now(timezone.utc)
@@ -109,13 +108,7 @@ def solar_position(latitude, longitude):
     for i in range(0, len(s_x)):
         azimuth_angle.append(math.degrees(math.atan2(-s_x[i],-s_y[i])))
 
-    timezone_object = TimezoneFinder()
-    selected_timezone = timezone_object.timezone_at(lng=longitude, lat=latitude)
-    final_timezone = pytz.timezone(selected_timezone)
-    selected_current_time = datetime.now(final_timezone)
-    timezone_difference = round((current_time.hour + current_time.minute / 60.0) - (selected_current_time.hour + selected_current_time.minute / 60.0)) # [h] difference between local and standard time
-    
-    zenith_angle =  zenith_angle[timezone_difference:] + zenith_angle[:timezone_difference]
-    azimuth_angle =  azimuth_angle[timezone_difference:] + azimuth_angle[:timezone_difference]
+    zenith_angle =  zenith_angle[time_difference:] + zenith_angle[:time_difference]
+    azimuth_angle =  azimuth_angle[time_difference:] + azimuth_angle[:time_difference]
 
     return zenith_angle, azimuth_angle

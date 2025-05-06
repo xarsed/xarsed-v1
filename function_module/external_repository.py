@@ -1,16 +1,10 @@
 
 def create_link(latitude, longitude, parameter):
     
-    import pytz, calendar
+    import calendar
     from datetime import datetime,timezone
-    from timezonefinder import TimezoneFinder
     
-    timezone_object = TimezoneFinder()
-    selected_timezone = timezone_object.timezone_at(lng=longitude, lat=latitude)
-    final_timezone = pytz.timezone(selected_timezone)
-    selected_current_time = datetime.now(final_timezone)
     utc_current_time = datetime.now(timezone.utc)
-    time_difference = round((utc_current_time.hour + utc_current_time.minute / 60) - (selected_current_time.hour + selected_current_time.minute / 60))
     
     if utc_current_time.month > 1:
         base_year = utc_current_time.year - 1
@@ -35,7 +29,7 @@ def create_link(latitude, longitude, parameter):
                       "https://goldsmr4.gesdisc.eosdis.nasa.gov/thredds/ncss/MERRA2_MONTHLY_aggregation/M2TMNXFLX.5.12.4_Aggregation.ncml?var=NIRDF&latitude=" + str(latitude) + "&longitude=" + str(longitude) + "&time_start=" + str(base_year_anomaly) + "-01-01T00%3A30%3A00Z&time_end=" + str(base_year) + "-12-31T00%3A30%3A00Z&accept=csv_file"
                     ]
                       
-    return hourly_url, monthly_url, leap_year, base_year, time_difference
+    return hourly_url, monthly_url, leap_year, base_year
 
 
 def send_request(hourly_url, monthly_url, username, password):

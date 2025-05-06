@@ -20,19 +20,21 @@ class UserLocationForm(forms.Form):
         point_coordinates = point_object.coords
         
         if point_srid == 4326:
-            request.session["user_location"] = [point_coordinates[0], point_coordinates[1]]
+            time_difference = -round(point_coordinates[0] / 15)
+            request.session["user_location"] = [point_coordinates[0], point_coordinates[1], time_difference]
         
         elif point_srid == 3857:
             transform_object = point_object.transform(4326, clone=True)
 
             if transform_object != None:
                 transform_coordinates = transform_object.coords
-                request.session["user_location"] = [transform_coordinates[0], transform_coordinates[1]]
+                time_difference = -round(transform_object[0] / 15)
+                request.session["user_location"] = [transform_coordinates[0], transform_coordinates[1], time_difference]
 
             else:
                 import math
                 longitude = (point_coordinates[0] * 180) / 20037508.34
                 lat = (point_coordinates[1] * 180) / 20037508.34
                 latitude = (math.atan(math.pow(math.e, lat * (math.pi / 180))) * 360) / math.pi - 90
-                request.session["user_location"] = [longitude, latitude]
-
+                time_difference = -round(longitude / 15)
+                request.session["user_location"] = [longitude, latitude, time_difference]
