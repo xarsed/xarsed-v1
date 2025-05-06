@@ -2,9 +2,9 @@ from function_module.solar_functions import photovoltaics, solar_common, solar_s
 from function_module.solution_functions import solution_overview, warning_recommendation, solution_details
 
 
-def solar_energy_pv_electricity_battery(latitude, longitude, resource_values, requirement_values): 
+def solar_energy_pv_electricity_battery(latitude, longitude, time_difference, resource_values, requirement_values): 
                          
-    zenith_angle, azimuth_angle = solar_common.solar_position(latitude, longitude)
+    zenith_angle, azimuth_angle = solar_common.solar_position(latitude, longitude, time_difference)
     optimum_zenith_angle, optimum_azimuth_angle, global_tilted_irradiance, global_tracker_irradiance = photovoltaics.radiation_calculation(
         latitude, resource_values["Global_Horizontal_Irradiance"], resource_values["Diffuse_Horizontal_Irradiance"], resource_values["Surface_Albedo"], zenith_angle, azimuth_angle)
 

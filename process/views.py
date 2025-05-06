@@ -176,9 +176,10 @@ def resource_parameter(request, selectedParameter):
                 password = os.environ.get("NASA_ACCOUNT_PASSWORD", "") 
                 
                 latitude = request.session["user_location"][1] 
-                longitude = request.session["user_location"][0] 
+                longitude = request.session["user_location"][0]
+                time_difference = request.session["user_location"][2] 
 
-                hourly_url, monthly_url, leap_year, base_year, time_difference = external_repository.create_link(latitude, longitude, selectedParameter)
+                hourly_url, monthly_url, leap_year, base_year = external_repository.create_link(latitude, longitude, selectedParameter)
                 hourly_raw_data, monthly_raw_data = external_repository.send_request(hourly_url, monthly_url,username, password)  
 
                 if (hourly_raw_data.empty == True | monthly_raw_data.empty == True): 
@@ -247,7 +248,7 @@ def resource_parameter(request, selectedParameter):
     except KeyError:
         return redirect("/home/")
 
-    
+
 def requirement_parameter(request, selectedParameter): 
 
     try:
@@ -469,6 +470,7 @@ def final_report(request):
 
         latitude = request.session["user_location"][1] 
         longitude = request.session["user_location"][0] 
+        time_difference = request.session["user_location"][2]
 
         resource_series_parameters = common.series_parameter(selected_resource) 
         requirement_series_parameters = common.series_parameter(selected_requirement)
@@ -482,7 +484,7 @@ def final_report(request):
             requirement_values.update({i : request.session[i]})
 
         if (selected_resource == "solarEnergyPV" and selected_requirement == "electricity" and selected_storage == "battery"):
-            solution_overview, solution_details = reporting.solar_energy_pv_electricity_battery(latitude, longitude, resource_values, requirement_values)
+            solution_overview, solution_details = reporting.solar_energy_pv_electricity_battery(latitude, longitude, time_difference, resource_values, requirement_values)
                 
         else:
             pass
@@ -503,8 +505,8 @@ def final_report(request):
     except KeyError:
 
         return redirect("/home/")
-    
-
+ 
+ 
 def save_html(request): 
   
     try: 
