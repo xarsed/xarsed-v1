@@ -1,10 +1,9 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.template.loader import render_to_string
-
-from function_module import common, external_repository, statistical_process
-from function_module.solution_functions import reporting
-
+from xarsed.common.common import series_parameter, create_list, appliance_list, generate_table_list
+from xarsed.solution.reporting import solar_energy_pv_electricity_battery
+from xarsed.common.common import generate_list
 from process.forms import UserLocationForm
 
 
@@ -17,7 +16,7 @@ def get_location(request):
             form.save_location(request)
             
             selected_resource = "solarEnergyPV"
-            series_parameters = common.series_parameter(selected_resource) 
+            series_parameters = series_parameter(selected_resource) 
             request.session["selected_resource"] = selected_resource
 
             request.session.set_expiry(3600)
@@ -40,11 +39,11 @@ def resource_parameter(request, selectedParameter):
         
     try:
         selected_resource = request.session["selected_resource"]
-        series_parameters = common.series_parameter(selected_resource)  
+        series_parameters = series_parameter(selected_resource)  
         uploaded_file = request.FILES.get("uploadedFile")
-        repository = request.POST.get("repository")
+        model = request.POST.get("model")
 
-        if (uploaded_file == None and repository == None):
+        if (uploaded_file == None and model == None):
                 
             request.session.set_expiry(3600)
                 
@@ -52,7 +51,7 @@ def resource_parameter(request, selectedParameter):
             context = {"message1": message, "seriesParameters":series_parameters, "selectedParameter":selectedParameter} 
             return render(request, "process/get_resource.html", context)
             
-        elif (uploaded_file != None and repository != None):
+        elif (uploaded_file != None and model != None):
                 
             request.session.set_expiry(3600)
                 
@@ -60,7 +59,7 @@ def resource_parameter(request, selectedParameter):
             context = {"message1": message, "seriesParameters":series_parameters, "selectedParameter":selectedParameter} 
             return render(request, "process/get_resource.html", context)
             
-        elif (uploaded_file != None and repository == None):
+        elif (uploaded_file != None and model == None):
 
             if uploaded_file.size > 2.5 * 1024 * 1024: #2.5MB
 
@@ -82,7 +81,7 @@ def resource_parameter(request, selectedParameter):
                     
                 else:
                         
-                    final_list = common.create_list(uploaded_file, selectedParameter)
+                    final_list = create_list(uploaded_file, selectedParameter)
 
                     if final_list == None:
 
@@ -126,7 +125,7 @@ def resource_parameter(request, selectedParameter):
                             else:
                                     
                                 selected_requirement = "electricity"
-                                series_parameters = common.series_parameter(selected_requirement) 
+                                series_parameters = series_parameter(selected_requirement) 
                                 request.session["selected_requirement"] = selected_requirement
 
                                 request.session.set_expiry(3600)
@@ -135,11 +134,24 @@ def resource_parameter(request, selectedParameter):
                                 
                                 return render(request, "process/get_requirement.html", context)
 
-        elif (uploaded_file == None and repository != None):
+        elif (uploaded_file == None and model != None):
+  
+            latitude = request.session["user_location"][1] 
+            longitude = request.session["user_location"][0]
+            time_difference = request.session["user_location"][2] 
 
-            try:
-                additional_parameter = request.session[selectedParameter+"_plus"]
-                request.session[selectedParameter] = additional_parameter
+            final_list = generate_list(selectedParameter, latitude, longitude, time_difference)
+
+            if final_list == None:
+                request.session.set_expiry(3600)
+
+                message = "The requested parameter could not be saved, please try again!"
+                context = {"message3": message, "seriesParameters":series_parameters, "selectedParameter":selectedParameter} 
+                return render(request, "process/get_resource.html", context) 
+
+            else:  
+                request.session[selectedParameter] = final_list          
+                
                 saved_parameters = []
                 for i in series_parameters:
                     try:
@@ -151,7 +163,7 @@ def resource_parameter(request, selectedParameter):
                 if set(series_parameters) != set(saved_parameters):
                                                                     
                     request.session.set_expiry(3600)
-                
+                            
                     message = "Your data was saved successfully."
                     context = {"message4": message, "seriesParameters":series_parameters, "selectedParameter":selectedParameter} 
                     return render(request, "process/get_resource.html", context)
@@ -159,7 +171,7 @@ def resource_parameter(request, selectedParameter):
                 else:
                                     
                     selected_requirement = "electricity"
-                    series_parameters = common.series_parameter(selected_requirement) 
+                    series_parameters = series_parameter(selected_requirement) 
                     request.session["selected_requirement"] = selected_requirement
 
                     request.session.set_expiry(3600)
@@ -167,93 +179,16 @@ def resource_parameter(request, selectedParameter):
                     context = {"seriesParameters":series_parameters} 
                                 
                     return render(request, "process/get_requirement.html", context) 
-                
-            except Exception as e:
-                
-                import os
-
-                username = os.environ.get("NASA_ACCOUNT_USERNAME", "")  
-                password = os.environ.get("NASA_ACCOUNT_PASSWORD", "") 
-                
-                latitude = request.session["user_location"][1] 
-                longitude = request.session["user_location"][0]
-                time_difference = request.session["user_location"][2] 
-
-                hourly_url, monthly_url, leap_year, base_year = external_repository.create_link(latitude, longitude, selectedParameter)
-                hourly_raw_data, monthly_raw_data = external_repository.send_request(hourly_url, monthly_url,username, password)  
-
-                if (hourly_raw_data.empty == True | monthly_raw_data.empty == True): 
-
-                    request.session.set_expiry(3600)
-                
-                    message = "Please wait a few moments and try again, the external repository servers are busy!"
-                    context = {"message3": message, "seriesParameters":series_parameters, "selectedParameter":selectedParameter} 
-                    return render(request, "process/get_resource.html", context) 
-
-                else:
-                        
-                    for j in series_parameters:
-                    
-                        final_list = statistical_process.calculate_anomaly(hourly_raw_data, monthly_raw_data, leap_year, base_year, j, time_difference)
-                                
-                        if final_list != None:
-                            if j == selectedParameter:
-                                request.session[j] = final_list
-                                
-                            else:
-                                request.session[j+"_plus"] = final_list
-                                
-                        else:
-                            continue
-
-                    try:
-                        request.session[selectedParameter]
-                            
-                        saved_parameters = []
-                        for i in series_parameters:
-                            try:
-                                request.session[i]
-                                saved_parameters.append(i)
-                            except KeyError:
-                                continue
-
-                        if set(series_parameters) != set(saved_parameters):
-                                                                    
-                            request.session.set_expiry(3600)
-                            
-                            message = "Your data was saved successfully."
-                            context = {"message4": message, "seriesParameters":series_parameters, "selectedParameter":selectedParameter} 
-                            return render(request, "process/get_resource.html", context)
-                                
-                        else:
-                                    
-                            selected_requirement = "electricity"
-                            series_parameters = common.series_parameter(selected_requirement) 
-                            request.session["selected_requirement"] = selected_requirement
-
-                            request.session.set_expiry(3600)
-                
-                            context = {"seriesParameters":series_parameters} 
-                                
-                            return render(request, "process/get_requirement.html", context) 
-                        
-                    except Exception as e:  
-                            
-                        request.session.set_expiry(3600)
-                
-                        message = "The requested parameter could not be saved, please try again!"
-                        context = {"message3": message, "seriesParameters":series_parameters, "selectedParameter":selectedParameter} 
-                        return render(request, "process/get_resource.html", context)           
 
     except KeyError:
         return redirect("/home/")
-
+      
 
 def requirement_parameter(request, selectedParameter): 
 
     try:
         selected_requirement = request.session["selected_requirement"]
-        series_parameters = common.series_parameter(selected_requirement)  
+        series_parameters = series_parameter(selected_requirement)  
         uploaded_file = request.FILES.get("uploadedFile")
 
         if uploaded_file.size > 2.5 * 1024 * 1024: #2.5MB
@@ -276,7 +211,7 @@ def requirement_parameter(request, selectedParameter):
                     
             else:
                         
-                final_list = common.create_list(uploaded_file, selectedParameter)
+                final_list = create_list(uploaded_file, selectedParameter)
 
                 if final_list == None:
 
@@ -339,11 +274,11 @@ def generate_data(request, selectedParameter):
         request.session[selectedParameter+"_table"] = consumption_table
         request.session[selectedParameter+"_list"] = consumption_list
 
-        appliance_list, consumption_unit = common.appliance_list(selectedParameter)
+        applianceList, consumptionUnit = appliance_list(selectedParameter)
 
         request.session.set_expiry(3600)
 
-        context = {"selectedParameter":selectedParameter, "applianceList":appliance_list, "consumptionUnit":consumption_unit, "consumptionTable":consumption_table}
+        context = {"selectedParameter":selectedParameter, "applianceList":applianceList, "consumptionUnit":consumptionUnit, "consumptionTable":consumption_table}
 
         return render(request, "process/generate_data.html", context)
     
@@ -371,16 +306,16 @@ def create_table(request, selectedParameter):
         hours = request.POST.getlist("hour")
         appliance_usage = float(request.POST.get("applianceUsage"))
 
-        new_consumption_table, new_consumption_list = common.generate_table_list(selectedParameter, appliance, appliance_name, appliance_consumption, appliance_count, appliance_efficiency, seasons, months, weeks, days, specfic_day, hours, appliance_usage, consumption_table, consumption_list)
+        new_consumption_table, new_consumption_list = generate_table_list(selectedParameter, appliance, appliance_name, appliance_consumption, appliance_count, appliance_efficiency, seasons, months, weeks, days, specfic_day, hours, appliance_usage, consumption_table, consumption_list)
             
         request.session[selectedParameter+"_table"] = new_consumption_table
         request.session[selectedParameter+"_list"] = new_consumption_list 
             
-        appliance_list, consumption_unit = common.appliance_list(selectedParameter)
+        applianceList, consumptionUnit = appliance_list(selectedParameter)
 
         request.session.set_expiry(3600)
 
-        context = {"selectedParameter":selectedParameter, "applianceList":appliance_list, "consumptionUnit":consumption_unit, "consumptionTable":new_consumption_table}
+        context = {"selectedParameter":selectedParameter, "applianceList":applianceList, "consumptionUnit":consumptionUnit, "consumptionTable":new_consumption_table}
 
         return render(request, "process/generate_data.html", context)
     
@@ -422,7 +357,7 @@ def return_process(request, selectedParameter):
         request.session[selectedParameter+"_list"]
             
         selected_requirement = request.session["selected_requirement"] 
-        series_parameters = common.series_parameter(selected_requirement) 
+        series_parameters = series_parameter(selected_requirement) 
 
         request.session.set_expiry(3600)
 
@@ -446,11 +381,11 @@ def delete_table(request, selectedParameter):
         consumption_list = [0 for i in range(8760)]
         request.session[selectedParameter+"_list"] = consumption_list
             
-        appliance_list, consumption_unit = common.appliance_list(selectedParameter)
+        applianceList, consumptionUnit = appliance_list(selectedParameter)
 
         request.session.set_expiry(3600)
 
-        context = {"selectedParameter":selectedParameter, "applianceList":appliance_list, "consumptionUnit":consumption_unit, "consumptionTable":consumption_table}
+        context = {"selectedParameter":selectedParameter, "applianceList":applianceList, "consumptionUnit":consumptionUnit, "consumptionTable":consumption_table}
 
         return render(request, "process/generate_data.html", context)
     
@@ -472,8 +407,8 @@ def final_report(request):
         longitude = request.session["user_location"][0] 
         time_difference = request.session["user_location"][2]
 
-        resource_series_parameters = common.series_parameter(selected_resource) 
-        requirement_series_parameters = common.series_parameter(selected_requirement)
+        resource_series_parameters = series_parameter(selected_resource) 
+        requirement_series_parameters = series_parameter(selected_requirement)
 
         resource_values = {}
         for i in resource_series_parameters:
@@ -484,7 +419,7 @@ def final_report(request):
             requirement_values.update({i : request.session[i]})
 
         if (selected_resource == "solarEnergyPV" and selected_requirement == "electricity" and selected_storage == "battery"):
-            solution_overview, solution_details = reporting.solar_energy_pv_electricity_battery(latitude, longitude, time_difference, resource_values, requirement_values)
+            solution_overview, solution_details = solar_energy_pv_electricity_battery(latitude, longitude, time_difference, resource_values, requirement_values)
                 
         else:
             pass
