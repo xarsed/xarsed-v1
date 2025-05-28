@@ -7,7 +7,7 @@ app_name = "process"
 
 urlpatterns = [
     path("get_location", views.get_location, name="get_location"),
-    path("resource_parameter/<selectedParameter>/", views.resource_parameter, name="resource_parameter"),   
+    path("resource_parameter/<selectedParameter>/", views.resource_parameter, name="resource_parameter"), 
     path("requirement_parameter/<selectedParameter>/", views.requirement_parameter, name="requirement_parameter"), 
     path("generate_data/<selectedParameter>", views.generate_data, name="generate_data"), 
     path("create_table/<selectedParameter>", views.create_table, name="create_table"),

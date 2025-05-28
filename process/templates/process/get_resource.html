@@ -25,8 +25,9 @@
         </h1>
         <p>
             To perform solar calculations, there are four essential environmental parameters that need to be determined. 
-            You have two ways to do this: provide your own data or ask <b>Xarsed</b> to get the average data for your location. 
-            For the second method, simply check the box for <b>Getting data from the external repository</b> and submit the form, 
+            You have two ways to do this: provide your own data or ask <b>Xarsed</b> to generate average data for your location. 
+            For the second method, simply check the box for <b>Get data from models</b> and submit the form 
+            (just note that these are simplified and approximate values, so they may differ from the actual values),
             but for the first method, you need to pay attention to the following points:
         </p>
         <ul>
@@ -87,8 +88,8 @@
                 <div></div>
                 {% endif %}
 
-                <label for="repository">Getting data from the external repository:<br>(Depending on network speed and repository traffic, this method may take a while, so be patient!)</label>
-                <input type="checkbox" class="input" id="repository" name="repository" value="repository">
+                <label for="model">Get data from models:<br>(This data is the result of statistical and machine learning models trained with satellite data)</label>
+                <input type="checkbox" class="input" id="model" name="model" value="model">
 
                 {% if i == selectedParameter %}
                 <div class="message">

@@ -1,5 +1,5 @@
 """
-URL configuration for xarsed project.
+URL configuration for xarsed_WA project.
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/5.1/topics/http/urls/
@@ -18,9 +18,8 @@ from django.contrib import admin
 from django.urls import path, include
 from django.views.generic import RedirectView
 
-
 urlpatterns = [
-    path("admin/", admin.site.urls),
+    path('admin/', admin.site.urls),
     path("home/", include("home.urls")),
     path("process/", include("process.urls")),
     path("", RedirectView.as_view(url="home/")),
